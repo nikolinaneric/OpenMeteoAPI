@@ -16,5 +16,6 @@ class WeatherDataDiffSerializer(serializers.Serializer):
     precipitation_sum_measured = serializers.CharField()
     precipitation_sum_diff = serializers.CharField()
 
+
 class UserParameterSerializer(serializers.Serializer):
     city_name = serializers.CharField()

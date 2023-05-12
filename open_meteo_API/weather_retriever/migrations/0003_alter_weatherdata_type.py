@@ -5,8 +5,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("weather_retriever", "0002_rename_winds_speed_weatherdata_wind_speed"),
-    ]
+        ("weather_retriever",
+         "0002_rename_winds_speed_weatherdata_wind_speed"),]
 
     operations = [
         migrations.AlterField(

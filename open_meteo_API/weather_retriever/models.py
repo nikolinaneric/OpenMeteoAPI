@@ -10,9 +10,10 @@ class WeatherData(models.Model):
     min_temperature = models.CharField(max_length=255)
     wind_speed = models.CharField(max_length=255)
     precipitation_sum = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, choices = [('measured', 'measured'), ('forecast', 'forecast')])
+    type = models.CharField(
+        max_length=255, choices=[
+            ("measured", "measured"), ("forecast", "forecast")])
 
     class Meta:
-        db_table = 'weather_data'
-        app_label = 'weather_retriever'
-  
+        db_table = "weather_data"
+        app_label = "weather_retriever"

@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
 from weather_retriever.views import WeatherDataDiffView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("weather/", WeatherDataDiffView.as_view(), name='data_diff')
+    path("weather/", WeatherDataDiffView.as_view(), name="data_diff"),
 ]

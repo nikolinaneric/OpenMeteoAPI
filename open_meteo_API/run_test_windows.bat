@@ -1,4 +1,4 @@
-python -m venv venv
-%PROJECT_DIRECTORY%\venv\Scripts\activate.bat
-pip install -r requirements.txt
-pytest
+call python -m venv venv
+call %PROJECT_DIRECTORY%\venv\Scripts\activate.bat
+call pip install -r requirements.txt
+call pytest --ds=open_meteo_API.test_settings
