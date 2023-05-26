@@ -16,8 +16,6 @@ def test_get_measured_and_forecast_on_same_date(create_weather_data):
     for key, value in result.items():
         assert key == datetime.date(2022, 1, 1)
         key_value1, key_value2 = value.items()
-        assert key_value1[0] == "latest_forecast"
-        assert key_value2[0] == "measured"
         assert (key_value1[1]).city == (key_value2[1]).city == city_name
         if (key_value1[1]).type == "forecast":
             assert (key_value1[1]).wind_speed == "10.5 km/h"

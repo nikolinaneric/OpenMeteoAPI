@@ -4,6 +4,9 @@ import pytest
 
 from weather_retriever.models import WeatherData
 
+from weather_retriever.pydantic_models import WeatherDataModel
+
+from weather_retriever.open_meteo_wrapper import OpenMeteoWrapper
 
 @pytest.fixture
 def create_weather_data():
@@ -54,3 +57,40 @@ def create_weather_data():
     w2.delete()
     w3.delete()
     w4.delete()
+
+@pytest.fixture
+def create_mock_data():
+    mock_data = {
+        "latitude": 43.98,
+        "longitude": 21.26,
+        "generationtime_ms": 0.003,
+        "utc_offset_seconds": 1,
+        "timezone": "UTC",
+        "timezone_abbreviation": "UTC",
+        "elevation": 2,
+        "daily_units": {
+            "time": "iso8601",
+            "temperature_2m_max": "°C",
+            "precipitation_sum": "mm",
+            "windspeed_10m_max": "km/h",
+        },
+        "daily": {
+            "time": ["2023-05-10", "2023-05-11"],
+            "temperature_2m_max": ["22.5", "20.0"],
+            "temperature_2m_min": ["10.0", "12.5"],
+            "windspeed_10m_max": ["10.0", "12.5"],
+            "precipitation_sum": ["2.5", "0.0"],
+        },
+    }
+
+    yield mock_data
+
+@pytest.fixture
+def get_data_dict_from_mock_data(create_mock_data):
+    mock_data = create_mock_data
+    data = WeatherDataModel.parse_obj(mock_data)
+    weather_data_retriever = OpenMeteoWrapper()
+    weather_data_retriever.weather_data = data
+    place_name = "TestPlace"
+    data_dict = weather_data_retriever.organize_data(place_name)
+    yield data_dict, weather_data_retriever, data, place_name

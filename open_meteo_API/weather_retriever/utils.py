@@ -1,9 +1,6 @@
-from datetime import datetime
-from typing import Tuple, Type
+from typing import Tuple
 
 from geopy.geocoders import Nominatim
-
-from weather_retriever.models import WeatherData
 
 from .pydantic_models import LocationModel
 
@@ -41,56 +38,3 @@ def get_location_from_name(place_name: str) -> Tuple[float, float]:
         raise ValueError("Error in finding Area & Coordinates.", e)
 
 
-def organize_data(
-        data: Type[WeatherData], place_name: str
-) -> None:
-    """
-    Extractes weather data retrieved from an API,
-    organizes it by date and stores it in a database.
-    (Using Django model WeatherData)
-
-    Parameters:
-        WeatherData(Pydantic model) object that containts
-        valited weather data
-    """
-    place_name = place_name.replace("-", " ")
-    temperature_units = data.daily_units.temperature_2m_max
-    precipitation_units = data.daily_units.precipitation_sum
-    wind_speed_units = data.daily_units.windspeed_10m_max
-
-    date = data.daily.time
-    max_temperature = data.daily.temperature_2m_max
-    min_temperature = data.daily.temperature_2m_min
-    wind_speed = data.daily.windspeed_10m_max
-    precipitation_sum = data.daily.precipitation_sum
-
-    data_dict = {
-        place_name: {
-            date[i]: {
-                "max_temperature":
-                f"{max_temperature[i]} {temperature_units}",
-                "min_temperature":
-                f"{min_temperature[i]} {temperature_units}",
-                "wind_speed":
-                f"{wind_speed[i]} {wind_speed_units}",
-                "precipitation_sum":
-                f"{precipitation_sum[i]} {precipitation_units}",
-                "type": "measured"
-                if datetime.strptime(date[i], "%Y-%m-%d")
-                        <= datetime.now()
-                else "forecast",
-            }
-            for i in range(len(date))
-        }
-    }
-
-    for place_name, data in data_dict.items():
-        for date, data1 in data.items():
-            weather_data = WeatherData(
-                city=place_name, date=date, **data1
-            )
-            weather_data.save()
-
-    print(f"{data_dict}\n\n\
-           The data has been succesfully stored on your computer!"
-          )

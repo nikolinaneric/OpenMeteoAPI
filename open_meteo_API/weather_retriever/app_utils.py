@@ -30,19 +30,19 @@ def get_measured_and_forecast_on_same_date(
         .values_list("date", flat=True)
         .annotate(date_count=Count("date"))
         .filter(date_count__gt=1)
-    )
+    ) 
 
     weather_on_dates = {}
     for date in dates:
         weather_on_dates[date] = {
-            "latest_forecast": Model.objects.filter(date=date)
+            "latest_forecast": Model.objects.filter(city=city_name)
+            .filter(date=date)
             .filter(type="forecast")
-            .order_by("-id")
-            .first(),
-            "measured": Model.objects.filter(date=date)
+            .last(),
+            "measured": Model.objects.filter(city=city_name)
+            .filter(date=date)
             .filter(type="measured")
-            .order_by("-id")
-            .first(),
+            .last()
         }
 
     measured_and_forecast_on_dates = {

@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
+from weather_retriever.models import WeatherData
+from typing import Type
 
 import requests
 
@@ -23,8 +25,8 @@ class OpenMeteoWrapper:
         Args:
             latitude (float): The latitude of the location
             longitude (float): The longitude of the location
-            start_date (datetime): The start date of the weather data range
-            end_date (datetime): The end date of the weather data range
+            start_date (str): The start date of the weather data range
+            end_date (str): The end date of the weather data range
 
         Returns:
             WeatherDataModel: A Pydantic model representing the fetched
@@ -36,12 +38,27 @@ class OpenMeteoWrapper:
             from the API.
             ValidationError: If the API response JSON does not match
             the expected format.
+        
+        organize_data: Extractes weather data retrieved from an API,
+        organizes it by date
+
+        Args:
+            place name: str
+        
+        Returns:
+            data_dict 
+
+        save_data: Unpacks the data_dict and store the weather_data
+        object in database
+
+        Args:
+            data_dict: Dict
 
     """
 
-    def __init__(self):
-        self.api_url = "https://api.open-meteo.com/v1/forecast"
-        self.daily_params = [
+    def __init__(self) -> None:
+        self.api_url: str = "https://api.open-meteo.com/v1/forecast"
+        self.daily_params: List[str] = [
             "temperature_2m_max",
             "temperature_2m_min",
             "precipitation_sum",
@@ -52,9 +69,9 @@ class OpenMeteoWrapper:
         self,
         latitude: float,
         longitude: float,
-        start_date: datetime,
-        end_date: datetime,
-    ) -> Dict:
+        start_date: str,
+        end_date: str,
+    ) -> None:
         params = {
             "latitude": latitude,
             "longitude": longitude,
@@ -68,4 +85,55 @@ class OpenMeteoWrapper:
         response.raise_for_status()
         data = response.json()
         weather_data = WeatherDataModel.parse_obj(data)
-        return weather_data
+        self.weather_data = weather_data
+    
+    
+    def organize_data(self,
+        place_name: str
+    ) -> Dict:
+        place_name = place_name.replace("-", " ")
+        temperature_units = self.weather_data.daily_units.temperature_2m_max
+        precipitation_units = self.weather_data.daily_units.precipitation_sum
+        wind_speed_units = self.weather_data.daily_units.windspeed_10m_max
+
+        date = self.weather_data.daily.time
+        max_temperature = self.weather_data.daily.temperature_2m_max
+        min_temperature = self.weather_data.daily.temperature_2m_min
+        wind_speed = self.weather_data.daily.windspeed_10m_max
+        precipitation_sum = self.weather_data.daily.precipitation_sum
+
+        data_dict = {
+            place_name: {
+                date[i]: {
+                    "max_temperature":
+                    f"{max_temperature[i]} {temperature_units}",
+                    "min_temperature":
+                    f"{min_temperature[i]} {temperature_units}",
+                    "wind_speed":
+                    f"{wind_speed[i]} {wind_speed_units}",
+                    "precipitation_sum":
+                    f"{precipitation_sum[i]} {precipitation_units}",
+                    "type": "measured"
+                    if datetime.strptime(date[i], "%Y-%m-%d")
+                            <= datetime.now()
+                    else "forecast",
+                }
+                for i in range(len(date))
+            }
+        }
+        return data_dict
+    
+    def save_data(self, 
+        data_dict:Dict
+        )-> None:
+        for place_name, weather_data in data_dict.items():
+            for date, weather_data_on_date in weather_data.items():
+                weather_data = WeatherData(
+                    city=place_name, date=date, **weather_data_on_date
+                )
+                weather_data.save()
+
+        print(f"{data_dict}\n\n\
+            The data has been succesfully stored on your computer!"
+            )
+

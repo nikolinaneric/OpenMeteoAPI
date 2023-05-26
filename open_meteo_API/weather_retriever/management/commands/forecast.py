@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 
 from weather_retriever.open_meteo_wrapper import OpenMeteoWrapper
-from weather_retriever.utils import get_location_from_name, organize_data
+from weather_retriever.utils import get_location_from_name
 
 
 class ValidateDateAction(argparse.Action):
@@ -77,7 +77,9 @@ class Command(BaseCommand):
             )
         location = get_location_from_name(options["place_name"])
         weather_data_client = OpenMeteoWrapper()
-        data = weather_data_client.get_weather_data(
+        weather_data_client.get_weather_data(
             *location, options["start_date"], options["end_date"]
         )
-        organize_data(data, options["place_name"])
+        data = weather_data_client.organize_data(options["place_name"])
+        weather_data_client.save_data(data)
+ 
