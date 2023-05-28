@@ -35,7 +35,7 @@ def test_organize_data(get_data_dict_from_mock_data):
         assert isinstance(place_name, str)
         assert place_name == 'TestPlace'
         assert isinstance(place_data, dict)
-        assert place_data["2023-05-10"]["max_temperature"] == "22.5 °C"
+        assert place_data["2023-05-10"]["max_temperature"] == 22.5
 
 @pytest.mark.django_db
 def test_save_data(get_data_dict_from_mock_data):
@@ -52,16 +52,16 @@ def test_save_data(get_data_dict_from_mock_data):
         assert d.city == place_name
         assert (
             d.max_temperature ==
-            f"{data.daily.temperature_2m_max[i]} {data.daily_units.temperature_2m_max}")
+            data.daily.temperature_2m_max[i])
         assert (
             d.min_temperature ==
-            f"{data.daily.temperature_2m_min[i]} {data.daily_units.temperature_2m_max}")
+            data.daily.temperature_2m_min[i])
         assert (
             d.wind_speed ==
-            f"{data.daily.windspeed_10m_max[i]} {data.daily_units.windspeed_10m_max}")
+            data.daily.windspeed_10m_max[i])
         assert (
             d.precipitation_sum ==
-            f"{data.daily.precipitation_sum[i]} {data.daily_units.precipitation_sum}")
+            data.daily.precipitation_sum[i])
         if datetime.strptime(date, "%Y-%m-%d")\
                 <= datetime.now():
             assert d.type == "measured"

@@ -54,86 +54,53 @@ def get_measured_and_forecast_on_same_date(
 
 
 def calculate_weather_data_diff(measured_and_forecast_on_dates: Dict) -> Dict:
-    """
-    Calculate the difference between the latest forecast
-    and measured weather conditions for each date.
+        """
+        Calculate the difference between the latest forecast
+        and measured weather conditions for each date.
 
-    Parameters:
-        measured_and_forecast_on_dates (dict): a dictionary
-        where the keys are dates and the values are
-        dictionaries containing the latest forecast and
-        measured weather conditions for that date.
+        Parameters:
+            measured_and_forecast_on_dates (dict): a dictionary
+            where the keys are dates and the values are
+            dictionaries containing the latest forecast and
+            measured weather conditions for that date.
 
-    Returns: Dict
-        A dictionary where the keys are dates and the values
-        are dictionaries containing the difference
-        between the latest forecast and measured weather conditions
-        for that date.
-    """
-    weather_on_dates_diff = {}
-    for date, weather_conditions in measured_and_forecast_on_dates.items():
-        max_temp_forecast, temp_unit = (
-            weather_conditions["latest_forecast"].max_temperature
-        ).split(" ")
-        max_temp_measured = (weather_conditions["measured"]
-                             .max_temperature).strip(" °C"
-                                                     )
-        max_temp_diff = abs(
-            round((float(max_temp_forecast) - float(max_temp_measured)), 2)
-        )
-
-        min_temp_forecast = (
-            weather_conditions["latest_forecast"].min_temperature
-        ).strip(" °C")
-        min_temp_measured = (weather_conditions["measured"]
-                             .min_temperature).strip(" °C"
-                                                     )
-        min_temp_diff = abs(
-            round((float(min_temp_forecast) - float(min_temp_measured)), 2)
-        )
-
-        max_wind_speed_forecast, wind_speed_unit = (
-            weather_conditions["latest_forecast"].wind_speed
-        ).split(" ")
-        max_wind_speed_measured = (
-            weather_conditions["measured"].wind_speed).strip(" km/h")
-        max_wind_speed_diff = abs(
-            round(
-                (float(max_wind_speed_forecast) -
-                 float(max_wind_speed_measured)),
-                2))
-
-        precipitation_sum_forecast, precipitation_sum_unit = (
-            weather_conditions["latest_forecast"].precipitation_sum
-        ).split(" ")
-        precipitation_sum_measured = (
-            weather_conditions["measured"].precipitation_sum
-        ).strip(" mm")
-        precipitation_sum_diff = abs(
-            round(
-                (float(precipitation_sum_forecast) -
-                 float(precipitation_sum_measured)),
-                2,))
-
-        weather_on_dates_diff[date] = {
+        Returns: Dict
+            A dictionary where the keys are dates and the values
+            are dictionaries containing the difference
+            between the latest forecast and measured weather conditions
+            for that date.
+        """
+        weather_on_dates_diff = {}
+        for date, weather_conditions in measured_and_forecast_on_dates.items():
+            forecast_object =  weather_conditions["latest_forecast"]
+            measured_object =  weather_conditions["measured"]
+            (max_temp_diff, min_temp_diff,
+            max_wind_speed_diff, precipitation_sum_diff) =\
+            forecast_object.get_weather_diff(measured_object)
+            
+            weather_on_dates_diff[date] = {
             "date": date,
-            "max_temp_forecast": f"{max_temp_forecast} {temp_unit}",
-            "max_temp_measured": f"{max_temp_measured} {temp_unit}",
-            "max_temp_diff": f"{max_temp_diff} {temp_unit}",
-            "min_temp_forecast": f"{min_temp_forecast} {temp_unit}",
-            "min_temp_measured": f"{min_temp_measured} {temp_unit}",
-            "min_temp_diff": f"{min_temp_diff} {temp_unit}",
+            "max_temp_forecast": 
+            f"{forecast_object.max_temperature} {forecast_object.temperature_units}",
+            "max_temp_measured": 
+            f"{measured_object.max_temperature} {measured_object.temperature_units}",
+            "max_temp_diff": f"{max_temp_diff} {measured_object.temperature_units}",
+            "min_temp_forecast": 
+            f"{forecast_object.min_temperature} {forecast_object.temperature_units}",
+            "min_temp_measured": 
+            f"{measured_object.min_temperature} {measured_object.temperature_units}",
+            "min_temp_diff": f"{min_temp_diff} {measured_object.temperature_units}",
             "max_wind_speed_forecast":
-            f"{max_wind_speed_forecast} {wind_speed_unit}",
+            f"{forecast_object.wind_speed} {forecast_object.wind_speed_units}",
             "max_wind_speed_measured":
-            f"{max_wind_speed_measured} {wind_speed_unit}",
+            f"{measured_object.wind_speed} {measured_object.wind_speed_units}",
             "max_wind_speed_diff":
-            f"{max_wind_speed_diff} {wind_speed_unit}",
+            f"{max_wind_speed_diff} {measured_object.wind_speed_units}",
             "precipitation_sum_forecast":
-            f"{precipitation_sum_forecast} {precipitation_sum_unit}",
+            f"{forecast_object.precipitation_sum} {forecast_object.precipitation_units}",
             "precipitation_sum_measured":
-            f"{precipitation_sum_measured} {precipitation_sum_unit}",
+            f"{measured_object.precipitation_sum} {measured_object.precipitation_units}",
             "precipitation_sum_diff":
-            f"{precipitation_sum_diff} {precipitation_sum_unit}",
+            f"{precipitation_sum_diff} {measured_object.precipitation_units}",
         }
-    return weather_on_dates_diff
+        return weather_on_dates_diff

@@ -17,37 +17,37 @@ def create_weather_data():
     w1 = WeatherData.objects.create(
         city=city_name,
         date=date1,
-        max_temperature="20 °C",
-        min_temperature="5 °C",
-        wind_speed="10.5 km/h",
-        precipitation_sum="2.2 mm",
+        max_temperature=20,
+        min_temperature=5,
+        wind_speed=10.5,
+        precipitation_sum=2.2,
         type="forecast",
     )
     w2 = WeatherData.objects.create(
         city=city_name,
         date=date1,
-        max_temperature="22 °C",
-        min_temperature="7 °C",
-        wind_speed="14.5 km/h",
-        precipitation_sum="0.0 mm",
+        max_temperature=22,
+        min_temperature=7,
+        wind_speed=14.5,
+        precipitation_sum=0.0,
         type="measured",
     )
     w3 = WeatherData.objects.create(
         city=city_name,
         date=date2,
-        max_temperature="24.5 °C",
-        min_temperature="11 °C",
-        wind_speed="10 km/h",
-        precipitation_sum="5.6 mm",
+        max_temperature=24.5,
+        min_temperature=11,
+        wind_speed=10,
+        precipitation_sum=5.6,
         type="forecast",
     )
     w4 = WeatherData.objects.create(
         city=city_name,
         date=date2,
-        max_temperature="22.5 °C",
-        min_temperature="9 °C",
-        wind_speed="11 km/h",
-        precipitation_sum="8.5 mm",
+        max_temperature=22.5,
+        min_temperature=9,
+        wind_speed=11,
+        precipitation_sum=8.5,
         type="forecast",
     )
 
@@ -76,10 +76,10 @@ def create_mock_data():
         },
         "daily": {
             "time": ["2023-05-10", "2023-05-11"],
-            "temperature_2m_max": ["22.5", "20.0"],
-            "temperature_2m_min": ["10.0", "12.5"],
-            "windspeed_10m_max": ["10.0", "12.5"],
-            "precipitation_sum": ["2.5", "0.0"],
+            "temperature_2m_max": [22.5, 20.0],
+            "temperature_2m_min": [10.0, 12.5],
+            "windspeed_10m_max": [10.0, 12.5],
+            "precipitation_sum": [2.5, 0.0],
         },
     }
 

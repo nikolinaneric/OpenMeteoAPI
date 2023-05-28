@@ -101,18 +101,25 @@ class OpenMeteoWrapper:
         min_temperature = self.weather_data.daily.temperature_2m_min
         wind_speed = self.weather_data.daily.windspeed_10m_max
         precipitation_sum = self.weather_data.daily.precipitation_sum
+        
 
         data_dict = {
             place_name: {
                 date[i]: {
                     "max_temperature":
-                    f"{max_temperature[i]} {temperature_units}",
+                    max_temperature[i],
                     "min_temperature":
-                    f"{min_temperature[i]} {temperature_units}",
+                    min_temperature[i],
+                    "temperature_units":
+                    temperature_units,
                     "wind_speed":
-                    f"{wind_speed[i]} {wind_speed_units}",
+                    wind_speed[i],
+                    "wind_speed_units":
+                    wind_speed_units,
                     "precipitation_sum":
-                    f"{precipitation_sum[i]} {precipitation_units}",
+                    precipitation_sum[i],
+                    "precipitation_units":
+                    precipitation_units,
                     "type": "measured"
                     if datetime.strptime(date[i], "%Y-%m-%d")
                             <= datetime.now()
